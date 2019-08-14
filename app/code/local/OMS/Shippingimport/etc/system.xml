@@ -18,7 +18,7 @@
  
             <groups>
                 <webservice_group translate="label" module="shipping">
-                    <label>OMS Global Freight Estimator Configuration</label>
+                    <label>OMS Global Freight Estimator configuration</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>1000</sort_order>
                     <show_in_default>1</show_in_default>
@@ -147,18 +147,103 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </webservice_handlingfeepercent>
+						<webservice_alternate  translate="label">
+                            <label>Alternate methods: </label>
+                            <comment>Will be use in case when webservice returns no rates.</comment>
+                            <frontend_type>select</frontend_type>
+							 <source_model>OMS_Shippingimport_Model_Alternatemethods</source_model>
+							<sort_order>48</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </webservice_alternate>
+						
 						<webservice_debug  translate="label">
                             <label>Debug: </label>
                             <comment>Will add Webservice call info to a log.</comment>
                             <frontend_type>select</frontend_type>
 							 <source_model>OMS_Shippingimport_Model_Handlingfees</source_model>
-							<sort_order>48</sort_order>
+							<sort_order>49</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </webservice_debug>
 						 </fields>
                 </webservice_group>
+				  <email_settings translate="label" module="shipping">
+                    <label>OMS Shipping SMTP Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1001</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+				<fields>
+				<hostname  translate="label">
+                            <label>Host Name:</label>
+                            <comment></comment>
+                            <frontend_type>text</frontend_type>
+							<sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </hostname>
+				 <username  translate="label">
+                            <label>Username:</label>
+                            <comment></comment>
+                            <frontend_type>text</frontend_type>
+							<sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </username>
+				 <password  translate="label">
+                            <label>Password:</label>
+                            <comment></comment>
+                            <frontend_type>password</frontend_type>
+							<sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </password>
+				 <port  translate="label">
+                            <label>Port:</label>
+                            <comment></comment>
+                            <frontend_type>text</frontend_type>
+							<sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </port>
+				  <send_to  translate="label">
+                            <label>Send to:</label>
+                            <comment></comment>
+                            <frontend_type>text</frontend_type>
+							<sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </send_to>
+				  <from_name  translate="label">
+                            <label>Store Name:</label>
+                            <comment></comment>
+                            <frontend_type>text</frontend_type>
+							<sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </from_name>
+				  <from_email  translate="label">
+                            <label>Store Email:</label>
+                            <comment></comment>
+                            <frontend_type>text</frontend_type>
+							<sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                 </from_email>
+				</fields>
+				
+				</email_settings>
             </groups>
         </webservice>
 	<carriers>
@@ -180,6 +265,14 @@
               <show_in_website>1</show_in_website>
               <show_in_store>1</show_in_store>
             </active>
+		 <title translate="label">
+              <label>Title</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </title>
           <!--  <sort_order translate="label">
               <label>Sort order</label>
               <frontend_type>text</frontend_type>
@@ -222,7 +315,22 @@
               <show_in_store>0</show_in_store>
             </handling_type>-->
  
-          
+          	<domestic_fail_safe_rate>
+			<label>Domestic failsafe Rate</label>
+			<frontend_type>text</frontend_type>
+              <sort_order>78</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+			</domestic_fail_safe_rate>
+			<international_fail_safe_rate>
+			<label>International failsafe Rate</label>
+			<frontend_type>text</frontend_type>
+              <sort_order>79</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+			</international_fail_safe_rate>
             <allowedmethods translate="label">
               <label>Allowed Methods</label>
               <frontend_type>multiselect</frontend_type>
@@ -232,10 +340,29 @@
               <show_in_website>1</show_in_website>
               <show_in_store>1</show_in_store>
             </allowedmethods>
+			  <sallowspecific translate="label">
+			  <label>Ship to applicable countries</label>
+			  <frontend_type>select</frontend_type>
+			  <sort_order>90</sort_order>
+			  <frontend_class>shipping-applicable-country</frontend_class>
+			  <source_model>adminhtml/system_config_source_shipping_allspecificcountries</source_model>
+			  <show_in_default>1</show_in_default>
+			  <show_in_website>1</show_in_website>
+			  <show_in_store>1</show_in_store>
+             </sallowspecific>
+			  <specificcountry translate="label">
+			  <label>Ship to Specific countries</label>
+			  <frontend_type>multiselect</frontend_type>
+			  <sort_order>91</sort_order>
+			  <source_model>adminhtml/system_config_source_country</source_model>
+			  <show_in_default>1</show_in_default>
+			  <show_in_website>1</show_in_website>
+			  <show_in_store>1</show_in_store>
+               </specificcountry>
             <specificerrmsg translate="label">
               <label>Displayed Error Message</label>
               <frontend_type>textarea</frontend_type>
-              <sort_order>90</sort_order>
+              <sort_order>92</sort_order>
               <show_in_default>1</show_in_default>
               <show_in_website>1</show_in_website>
               <show_in_store>1</show_in_store>

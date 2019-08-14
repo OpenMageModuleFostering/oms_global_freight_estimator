@@ -9,7 +9,7 @@
                             <config>
                                 <children>
                                     <webservice translate="title" module="shipping">
-                                        <title>OMS Global Freight Estimator</title>
+                                        <title>Shipping SOAP Web Service</title>
                                         <sort_order>100</sort_order>
                                     </webservice>
                                 </children>

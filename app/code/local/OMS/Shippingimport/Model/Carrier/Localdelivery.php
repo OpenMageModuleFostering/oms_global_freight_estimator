@@ -40,6 +40,7 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 		  $username=Mage::getStoreConfig('webservice/webservice_group/webservice_username',Mage::app()->getStore());		
 		  $password=Mage::getStoreConfig('webservice/webservice_group/webservice_password',Mage::app()->getStore());
 		  $allowedMethods=Mage::getStoreConfig('carriers/customshiping/allowedmethods',Mage::app()->getStore());
+		  $shipping_title = Mage::getStoreConfig('carriers/customshiping/title',Mage::app()->getStore());
 		  $allMethods=Mage::getModel("shippingimport/import")->getAllMethods();
 		  $methods=array();
 		foreach($allMethods as $method)
@@ -86,7 +87,12 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 		  $allowedMethodsArr=split(",",$allowedMethods);
 		  
 		  $importModel= Mage::getModel('shippingimport/import');	
-		   $result = Mage::getModel('shipping/rate_result');	
+		   $result = Mage::getModel('shipping/rate_result');
+		   $result->reset();
+		  /* $methods = get_class_methods($result);
+		   echo "<pre/>";
+		   print_r($methods);
+		   exit;*/ 	
 		  
 		  $client = new SoapClient($url, array('trace' => TRUE));
 		  
@@ -241,10 +247,18 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 		  try
 		  {
 		   $rateresult=$result1->EstimateFreightResult->EstimateFreight->RateReplyDetails;
+			
 		  }
 		  catch(Exception $e)
 		  {
-			  Mage::getSingleton('core/session')->addError($result1->EstimateFreightResult->WSMessage); 
+			  Mage::getSingleton('core/session')->setData('Webservice',0); 
+			  if($debug=="true")
+		  		{
+			  		Mage::log("SOAP Error:", null, 'OMS_Shipping.log');
+					Mage::log($result1->EstimateFreightResult->WSMessage, null, 'OMS_Shipping.log');  
+		  		}
+			$data['exception'] = $result1->EstimateFreightResult->WSMessage;	
+			Mage::helper('Shippingimport')->sendEmail($data);	
 		  }
 /*echo "<pre/>";
 print_r($methods);
@@ -252,8 +266,9 @@ echo "<br/>";
 print_r($rateresult);
 exit;*/
 	  if(!empty($rateresult))
-		  {
+		  { 
 			  $config_methods="";
+			 Mage::getSingleton('core/session')->setData('Webservice',1);
 		  foreach($rateresult as $rate)
 		  {
 			 // echo $rate->ServiceType;  
@@ -271,7 +286,15 @@ exit;*/
 				   }
 				   catch(Exception $e)
 				   {
-					 echo $e->getMessage();   
+					// echo $e->getMessage();   
+					 if($debug=="true")
+		  				{
+			  				Mage::log("Code Error:", null, 'OMS_Shipping.log');
+							Mage::log($e->getMessage(), null, 'OMS_Shipping.log');  
+		  				}
+						
+					$data['exception'] = $e->getMessage();	
+					Mage::helper('Shippingimport')->sendEmail($data);
 				   }
 				}
 				
@@ -279,7 +302,7 @@ exit;*/
 				{
 				 $method = Mage::getModel('shipping/rate_result_method');
 				  $method->setCarrier($this->_code);
-				  $method->setCarrierTitle($this->_code);
+				  $method->setCarrierTitle($shipping_title);
 				  $method->setMethod($rate->ServiceType);
 				  $method->setMethodTitle($rate->ServiceType);
 				  $method->setCost($rate->TotalCharge->Amount);
@@ -306,18 +329,35 @@ exit;*/
 				  }
 				}
 			  }
-		  }	 
-		  
+		
+	     }	
+		  } 
+		  else /*Enhancement: Add the Failsafe rates. Updated on 11/10/2012*/
+		 {
+			  Mage::getSingleton('core/session')->setData('Webservice',0); 
+			  $result = $this->failSafeRates($_iso3countrycode,$OriginCountry);
+			
+		 } 
 		 
 		  
-		  }
+		 
  
 		
 		  }
 		  catch(Exception $e)
 		  {
-		  echo $e->getMessage();
-		  exit;
+		 // echo $e->getMessage();
+		  //exit;
+		   Mage::getSingleton('core/session')->setData('Webservice',0); 
+		 $result = $this->failSafeRates($_iso3countrycode,$OriginCountry);
+		  if($debug=="true")
+			{
+				Mage::log("Code Error:", null, 'OMS_Shipping.log');
+				Mage::log($e->getMessage(), null, 'OMS_Shipping.log');  
+			}
+			
+			$data['exception'] = $e->getMessage();	
+			Mage::helper('Shippingimport')->sendEmail($data);
 		  }
 	  
 	   
@@ -334,6 +374,54 @@ exit;*/
     {
         return array('customshiping'=>$this->getConfigData('name'));
     }
+	
+	public function failSafeRates($destination_country,$origin_country)
+	{
+	   
+	    $result = Mage::getModel('shipping/rate_result');
+		//$result->reset();
+		
+	   $alternatemethod = 
+	   Mage::getStoreConfig('webservice/webservice_group/webservice_alternate',Mage::app()->getStore());
+	  
+	   $method = Mage::getModel('shipping/rate_result_method');
+	   
+	   $method->setCarrier($this->_code);
+	   
+	   $method->setCarrierTitle($this->_code);
+				  
+	   if($alternatemethod=="flatrates")
+		 {
+			 $domestic_rate = 
+			 Mage::getStoreConfig('carriers/customshiping/domestic_fail_safe_rate',Mage::app()->getStore());
+			
+			 
+			 $international_rate = 
+			 Mage::getStoreConfig('carriers/customshiping/international_fail_safe_rate',Mage::app()->getStore());
+			if($origin_country==$destination_country)
+			{
+				
+				$method->setMethod("Domestic Rate");
+				$method->setMethodTitle("Domestic Rate");
+				$method->setCost($domestic_rate);
+				$method->setPrice($domestic_rate);
+				$result->append($method);
+				
+			}
+			else
+			{
+			  	
+				$method->setMethod("International Rate");
+				$method->setMethodTitle("International Rate");
+				$method->setCost($international_rate);
+				$method->setPrice($international_rate);
+				$result->append($method);
+			}	 
+				
+			} 
+			
+		return $result; 
+	}
 	
 	public function _getISO3Code($szISO2Code)
 	{

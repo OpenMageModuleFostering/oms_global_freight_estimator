@@ -63,6 +63,15 @@
         <class>OMS_Shippingimport_Model</class>
 		    <resourceModel>shippingimport_mysql4</resourceModel>
       </shippingimport>
+	   <shipping>
+        <rewrite>
+		
+            <carrier_tablerate>OMS_Shippingimport_Model_Carrier_Tablerate</carrier_tablerate>
+        </rewrite>
+<rewrite>
+		<shipping>OMS_Shippingimport_Model_Shipping</shipping>
+		</rewrite>
+    </shipping>
 	    <shippingimport_mysql4>
                 <class>OMS_Shippingimport_Model_Mysql4</class>
                 <entities>
