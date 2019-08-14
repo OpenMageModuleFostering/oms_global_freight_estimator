@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+	
+		<Discretelogix_Shippingimport>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Discretelogix_Shippingimport>
+		
+	</modules>
+</config>	
