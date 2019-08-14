@@ -1,5 +1,5 @@
 <?php
-class Discretelogix_Shippingimport_Model_Enable
+class OMS_Shippingimport_Model_Enable
 {
     public function toOptionArray()
     {

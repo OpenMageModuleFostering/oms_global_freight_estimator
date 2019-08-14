@@ -1,6 +1,6 @@
 <?php
 
-class Discretelogix_Shippingimport_IndexController extends Mage_Core_Controller_Front_Action
+class OMS_Shippingimport_IndexController extends Mage_Core_Controller_Front_Action
 {
   
   public function indexAction()

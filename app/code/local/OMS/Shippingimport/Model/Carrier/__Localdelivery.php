@@ -9,7 +9,7 @@
 	public $ActualWeight;
 	 
 }
-class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model_Carrier_Abstract
+class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model_Carrier_Abstract
  implements Mage_Shipping_Model_Carrier_Interface
 {
     /* Use group alias */
@@ -17,20 +17,9 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
  
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     { 
-       //  skip if not enabled
-        if (!Mage::getStoreConfig('carriers/'.$this->_code.'/active'))
-            return false;
-	   
-	     try
+         try
 	  { 
-		$enable=Mage::getStoreConfig('webservice/webservice_group/webservice_enable',Mage::app()->getStore());	
-		
-		if($enable=="no")
-		{
-		  return false;	
 			
-		}
-		
 		 $url=Mage::getStoreConfig('webservice/webservice_group/webservice_url',Mage::app()->getStore());		
 		  $username=Mage::getStoreConfig('webservice/webservice_group/webservice_username',Mage::app()->getStore());		
 		  $password=Mage::getStoreConfig('webservice/webservice_group/webservice_password',Mage::app()->getStore());
@@ -105,10 +94,10 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 			$itemQuantity=0;
 			
 			$count=0;
-			$freightArray[]="";
+			$freightArray[]=array();
 			foreach ($items as $item) 
 			{
-               $object= new FreightLineItem();
+               
 				$_product= Mage::getSingleton('catalog/product')->load($item->getProductId()); 
  				$itemQuantity =(int)$item->getQty();
 				$length=$_product->getResource()->getAttribute('length');
@@ -153,16 +142,15 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 		  
 		  $freightArray[$count]=$object;
 		  $count++;
-           $_product=null;
-		   $object=null;
+                
             }
           }
 		  
-	/*	 echo "<pre/>";
+		 echo "<pre/>";
 		  print_r($freightArray);
-		  exit;*/
+		  exit;
 		  
-		  $SOAPrequest["oLineItems"]['FreightLineItem']=$freightArray;
+		  $SOAPrequest["oLineItems"]['FreightLineItem']=$object;
 		  $SOAPrequest["oRestriction"]="NA";
 		  $SOAPrequest["strDestinationCountry"]=$_iso3countrycode;
 		  $SOAPrequest["strDestinationPostal"]=$postcode;
@@ -172,7 +160,7 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 		  $SOAPrequest["bAddHandlingFees"]=$AddHandlingFees;
 		  $SOAPrequest["lngPctOfHandlingFees"]=$HandlingFeePercent;
 		 
-/* echo "<pre/>";
+ /*echo "<pre/>";
 		  print_r($SOAPrequest); 
 		  exit;*/
 		  $result1 = $client->EstimateFreight($SOAPrequest);
@@ -228,16 +216,18 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 		  
 		  }
  
-		
+		  
 		  }
 		  catch(Exception $e)
 		  {
 		  echo $e->getMessage();
 		  exit;
 		  }
-	  
+	
 	   
-	   
+	    // skip if not enabled
+     //   if (!Mage::getStoreConfig('carriers/'.$this->_code.'/active'))
+       //     return false;
  
      
  

@@ -2,10 +2,10 @@
 <config>
     <modules>
 	
-		<Discretelogix_Shippingimport>
+		<OMS_Shippingimport>
             <active>true</active>
             <codePool>local</codePool>
-        </Discretelogix_Shippingimport>
+        </OMS_Shippingimport>
 		
 	</modules>
 </config>	

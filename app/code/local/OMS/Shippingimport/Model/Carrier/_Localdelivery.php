@@ -9,7 +9,7 @@
 	public $ActualWeight;
 	 
 }
-class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model_Carrier_Abstract
+class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model_Carrier_Abstract
  implements Mage_Shipping_Model_Carrier_Interface
 {
     /* Use group alias */

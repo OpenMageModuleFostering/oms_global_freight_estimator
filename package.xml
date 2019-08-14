@@ -1,84 +1,18 @@
 <?xml version="1.0"?>
 <package>
-	<name>OMS_Global_Freight_Estimator</name>
-	<version>1.0.1</version>
-	<stability>stable</stability>
-	<license>GPL</license>
-	<channel>community</channel>
-	<extends/>
-	<summary>Retreive and display live and accurate shipping rates.</summary>
-	<description>Displays shipping rates.</description>
-	<notes>Completed</notes>
-	<authors>
-		<author>
-			<name>OMS</name>
-			<user>OMS</user>
-			<email>david.morris@oms.us.com</email>
-		</author>
-	</authors>
-	<date>2012-10-01</date>
-	<time>15:38:18</time>
-	<contents>
-		<target name="magelocal">
-			<dir name="Discretelogix">
-				<dir name="Shippingimport">
-					<dir name="Helper">
-						<file name="Data.php" hash="0e80a1f4735884f1c88b76b25b9ee9d5"/>
-					</dir>
-					<dir name="Model">
-						<dir name="Carrier">
-							<file name="Localdelivery.php" hash="f43069ef62abbef5025730c72fdeebad"/>
-							<file name="_Localdelivery.php" hash="b6d9006d6450ac61db74c5f30bb56aeb"/>
-							<file name="__Localdelivery.php" hash="62407aa8d2ae22dcc232077dfdd5299f"/>
-						</dir>
-						<file name="Enable.php" hash="27503f2345449d8ad476b7ed705a4196"/>
-						<file name="Handlingfees.php" hash="3f3fdf8557190cec4f786d63697c1d66"/>
-						<file name="Import.php" hash="4bbaef745a4a973be001975fcbb92ca8"/>
-						<file name="Methodslist.php" hash="7def7ff53fe8df9240ba74ca02e96252"/>
-						<dir name="Mysql4">
-							<dir name="Import">
-								<file name="Collection.php" hash="3fdb97c52fc30e58fec1829b6f93f477"/>
-							</dir>
-							<file name="Import.php" hash="adb97b24eb8f757a0111c87f4d6a323f"/>
-						</dir>
-						<dir name="Resource">
-							<dir name="Eav">
-								<dir name="Mysql4">
-									<file name="Setup.php" hash="65035aef1bb79a13a49b596187139b85"/>
-								</dir>
-							</dir>
-						</dir>
-						<file name="Unit.php" hash="51defb0b2281c0add597c57e67e47a10"/>
-					</dir>
-					<dir name="controllers">
-						<file name="IndexController.php" hash="e2c98fd728c7c0e71f3b9df90934d3b7"/>
-					</dir>
-					<dir name="etc">
-						<file name="adminhtml.xml" hash="ea5b26de474c6e4ee445013789e383a8"/>
-						<file name="config.xml" hash="45c73742e81318129ea1c70e9b9ad82d"/>
-						<file name="system.xml" hash="c8f7a01e50d95b83e7ad21cc0576abae"/>
-					</dir>
-					<dir name="sql">
-						<dir name="shippingimport_setup">
-							<file name="mysql4-install-0.0.1.php" hash="d6d1d20afa936be5ef35207545df4a15"/>
-						</dir>
-					</dir>
-				</dir>
-			</dir>
-		</target>
-		<target name="mageetc">
-			<dir name="modules">
-				<file name="Discretelogix_Shippingimport.xml" hash="24e6c1788c336a0653079edd518c2a3f"/>
-			</dir>
-		</target>
-	</contents>
-	<compatible/>
-	<dependencies>
-		<required>
-			<php>
-				<min>5.2.0</min>
-				<max>5.4.0</max>
-			</php>
-		</required>
-	</dependencies>
+    <name>OMS_Global_Freight_Estimator</name>
+    <version>1.0.2</version>
+    <stability>stable</stability>
+    <license>AFL 3.0</license>
+    <channel>community</channel>
+    <extends/>
+    <summary>Retreive and display live and accurate shipping rates.</summary>
+    <description>Displays shipping rates.</description>
+    <notes>Completed</notes>
+    <authors><author><name>OMS</name><user>OMS</user><email>david.morris@oms.us.com</email></author></authors>
+    <date>2012-10-25</date>
+    <time>07:21:16</time>
+    <contents><target name="magelocal"><dir name="OMS"><dir name="Shippingimport"><dir name="Helper"><file name="Data.php" hash="0e80a1f4735884f1c88b76b25b9ee9d5"/></dir><dir name="Model"><dir name="Carrier"><file name="Localdelivery.php" hash="dad6ac945f69720fc8fc1e2679ab3c40"/><file name="_Localdelivery.php" hash="b6d9006d6450ac61db74c5f30bb56aeb"/><file name="__Localdelivery.php" hash="62407aa8d2ae22dcc232077dfdd5299f"/></dir><file name="Enable.php" hash="27503f2345449d8ad476b7ed705a4196"/><file name="Handlingfees.php" hash="3f3fdf8557190cec4f786d63697c1d66"/><file name="Import.php" hash="9bf8bd095f3880d80263fa77e9841b49"/><file name="Methodslist.php" hash="d2a684ca77d6752e4e38c04033094749"/><dir name="Mysql4"><dir name="Import"><file name="Collection.php" hash="3fdb97c52fc30e58fec1829b6f93f477"/></dir><file name="Import.php" hash="adb97b24eb8f757a0111c87f4d6a323f"/></dir><dir name="Resource"><dir name="Eav"><dir name="Mysql4"><file name="Setup.php" hash="65035aef1bb79a13a49b596187139b85"/></dir></dir></dir><file name="Unit.php" hash="51defb0b2281c0add597c57e67e47a10"/></dir><dir name="controllers"><file name="IndexController.php" hash="e2c98fd728c7c0e71f3b9df90934d3b7"/></dir><dir name="etc"><file name="adminhtml.xml" hash="ea5b26de474c6e4ee445013789e383a8"/><file name="config.xml" hash="45c73742e81318129ea1c70e9b9ad82d"/><file name="system.xml" hash="c1c9e23691d07e372076473764c9d3c7"/></dir><dir name="sql"><dir name="shippingimport_setup"><file name="mysql4-install-0.0.1.php" hash="d6d1d20afa936be5ef35207545df4a15"/></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="OMS_Shippingimport.xml" hash="24e6c1788c336a0653079edd518c2a3f"/></dir></target></contents>
+    <compatible/>
+    <dependencies><required><php><min>5.2.0</min><max>5.4.0</max></php></required></dependencies>
 </package>

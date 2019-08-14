@@ -1,5 +1,5 @@
 <?php
-class Discretelogix_Shippingimport_Model_Handlingfees
+class OMS_Shippingimport_Model_Handlingfees
 {
     public function toOptionArray()
     {

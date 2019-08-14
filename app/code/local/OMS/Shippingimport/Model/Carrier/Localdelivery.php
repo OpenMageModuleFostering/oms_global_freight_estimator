@@ -1,4 +1,3 @@
-
 <?php
  class  FreightLineItem
  {
@@ -9,7 +8,7 @@
 	public $ActualWeight;
 	 
 }
-class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model_Carrier_Abstract
+class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model_Carrier_Abstract
  implements Mage_Shipping_Model_Carrier_Interface
 {
     /* Use group alias */
@@ -17,13 +16,37 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
  
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     { 
-         try
+       //  skip if not enabled
+        if (!Mage::getStoreConfig('carriers/'.$this->_code.'/active'))
+            return false;
+	   
+	     try
 	  { 
+		$enable=Mage::getStoreConfig('webservice/webservice_group/webservice_enable',Mage::app()->getStore());	
+		
+		if($enable=="no")
+		{
+		  return false;	
 			
-		 $url=Mage::getStoreConfig('webservice/webservice_group/webservice_url',Mage::app()->getStore());		
+		}
+		
+		 $url=Mage::getStoreConfig('webservice/webservice_group/webservice_url',Mage::app()->getStore());
+		 $pos=strpos($url,"?WSDL");
+		 if($pos === false) 
+		 {
+    		$url=$url."?WSDL";
+			
+		 }		
 		  $username=Mage::getStoreConfig('webservice/webservice_group/webservice_username',Mage::app()->getStore());		
 		  $password=Mage::getStoreConfig('webservice/webservice_group/webservice_password',Mage::app()->getStore());
 		  $allowedMethods=Mage::getStoreConfig('carriers/customshiping/allowedmethods',Mage::app()->getStore());
+		  $allMethods=Mage::getModel("shippingimport/import")->getAllMethods();
+		  $methods=array();
+		foreach($allMethods as $method)
+		{
+			$methods[]=$method["name"];
+			
+		}
 		  $warehousename=Mage::getStoreConfig('webservice/webservice_group/webservice_warehousename',Mage::app()->getStore());
 		  $OriginCountry =Mage::getStoreConfig('webservice/webservice_group/webservice_originCountry',Mage::app()->getStore());
 		  $OriginPostal =Mage::getStoreConfig('webservice/webservice_group/webservice_originPostal',Mage::app()->getStore());
@@ -34,12 +57,29 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 		  $Unit="US";
 		  $InsuranceAmount= Mage::getStoreConfig('webservice/webservice_group/webservice_insuranceamount',Mage::app()->getStore());
 		  $AddHandlingFees = Mage::getStoreConfig('webservice/webservice_group/webservice_addhandlingfees',Mage::app()->getStore());
+		  
+		  if($AddHandlingFees=="true")
+		  {
+			  
+			$AddHandlingFees==1;  
+		  }
+		  else
+		  {
+			  
+			$AddHandlingFees=0;  
+		   }
 		
 		  
 		  $HandlingFeePercent =  Mage::getStoreConfig('webservice/webservice_group/webservice_handlingfeepercent',Mage::app()->getStore());
-		 
+		  $debug=Mage::getStoreConfig('webservice/webservice_group/webservice_debug',Mage::app()->getStore());
 		  
+		 
+		  $currencycode =  Mage::getStoreConfig('webservice/webservice_group/webservice_CurrencyAbbrev',Mage::app()->getStore());
+		  
+		  if($currencycode=="")
+		  {
 		  $currencycode=Mage::app()->getStore()-> getCurrentCurrencyCode(); 
+		  }
 		  
 		  
 		  	  
@@ -94,17 +134,34 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 			$itemQuantity=0;
 			
 			$count=0;
-			$freightArray[]=array();
+			$freightArray[]="";
+			/*echo "<pre/>";
+			print_r($items->getData());*/
+			
+			$parentid[]="";
+			$real_qty=0;
 			foreach ($items as $item) 
 			{
-               
+               $object= new FreightLineItem();
 				$_product= Mage::getSingleton('catalog/product')->load($item->getProductId()); 
+				
  				$itemQuantity =(int)$item->getQty();
 				$length=$_product->getResource()->getAttribute('length');
+				
+				$id=$item->getId();
+				//$parentid[]=$id;
+				$parent_item_id=$item->getParentItemId();
+				if($parent_item_id=="")
+				{
+				  $real_qty=$itemQuantity;	
+				}
+				if($parent_item_id!="" || !($_product->isConfigurable()))
+				{
 				
 				if(!empty($length))
 				{
 				$itemlength =(int)$length->getFrontend()->getValue($_product);
+				
 				}
 				else
 				{ 
@@ -129,28 +186,29 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 				{
 				 $itemHeight =0; 	
 				}
-		  		$itemWeight =(int)$item->getWeight();
+		  		$itemWeight =(float)$item->getWeight();
 				
-				 $object->Quantity =$itemQuantity;
+				 $object->Quantity =$real_qty;
 		  
 		  $object->Length = $itemlength;
 		  
-		  $object->Weight = $itemWeight;
+		  $object->Weight =$itemWeight;
 		  $object->Width = $itemWidth;
 		  $object->Height = $itemHeight;
 		  $object->ActualWeight=$itemWeight;
 		  
 		  $freightArray[$count]=$object;
 		  $count++;
-                
+           $_product=null;
+		   $object=null;
             }
           }
-		  
-		 echo "<pre/>";
+		  }
+		/* echo "<pre/>";
 		  print_r($freightArray);
-		  exit;
+		  exit;*/
 		  
-		  $SOAPrequest["oLineItems"]['FreightLineItem']=$object;
+		  $SOAPrequest["oLineItems"]['FreightLineItem']=$freightArray;
 		  $SOAPrequest["oRestriction"]="NA";
 		  $SOAPrequest["strDestinationCountry"]=$_iso3countrycode;
 		  $SOAPrequest["strDestinationPostal"]=$postcode;
@@ -160,11 +218,21 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 		  $SOAPrequest["bAddHandlingFees"]=$AddHandlingFees;
 		  $SOAPrequest["lngPctOfHandlingFees"]=$HandlingFeePercent;
 		 
- /*echo "<pre/>";
+/*echo "<pre/>";
 		  print_r($SOAPrequest); 
 		  exit;*/
+		  if($debug=="true")
+		  {
+			  Mage::log("SOAP request:", null, 'OMS_Shipping.log');
+			Mage::log($SOAPrequest, null, 'OMS_Shipping.log');  
+		  }
 		  $result1 = $client->EstimateFreight($SOAPrequest);
 		  
+		   if($debug=="true")
+		  {
+			Mage::log("SOAP response:", null, 'OMS_Shipping.log');
+			Mage::log($result1, null, 'OMS_Shipping.log');  
+		  }
 		  $method = Mage::getModel('shipping/rate_result_method');
 		 // $methods=get_class_methods($method);
 		 
@@ -178,9 +246,14 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 		  {
 			  Mage::getSingleton('core/session')->addError($result1->EstimateFreightResult->WSMessage); 
 		  }
-		  
-		  if(!empty($rateresult))
+/*echo "<pre/>";
+print_r($methods);
+echo "<br/>";
+print_r($rateresult);
+exit;*/
+	  if(!empty($rateresult))
 		  {
+			  $config_methods="";
 		  foreach($rateresult as $rate)
 		  {
 			 // echo $rate->ServiceType;  
@@ -189,10 +262,12 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 			  	$data=$importModel->checkMethod(trim($rate->ServiceType));
 				if(empty($data))
 				{
-				   $data["name"]=$rate->ServiceType;
+				  // $data["name"]=$rate->ServiceType;
 				   try
 				   {
-				   $importModel->setData($data)->save();
+				   //$importModel->setData($data)->save();
+				   if($rate->ServiceType!="")
+				    $importModel->insertShipping($rate->ServiceType);
 				   }
 				   catch(Exception $e)
 				   {
@@ -200,7 +275,7 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 				   }
 				}
 				
-				if(in_array($rate->ServiceType,$allowedMethodsArr))
+				if(in_array($rate->ServiceType,$allowedMethodsArr) || (!in_array($rate->ServiceType,$methods)))
 				{
 				 $method = Mage::getModel('shipping/rate_result_method');
 				  $method->setCarrier($this->_code);
@@ -210,24 +285,43 @@ class Discretelogix_Shippingimport_Model_Carrier_Localdelivery extends Mage_Ship
 				  $method->setCost($rate->TotalCharge->Amount);
 				  $method->setPrice($rate->TotalCharge->Amount);
 				  $result->append($method);
+				  
+				  if(!in_array($rate->ServiceType,$methods))
+				  {
+					$configModel = new Mage_Core_Model_Config();
+					
+				
+					if($config_methods!="")
+					{
+					$config_methods =$config_methods.",".trim($rate->ServiceType);
+					}
+					else
+					{
+						$config_methods=$allowedMethods;
+					$config_methods .=$config_methods. trim($rate->ServiceType);
+					}
+						
+					//$configModel ->saveConfig('design/head/demonotice', "1", 'default', 0);
+					$configModel ->saveConfig('carriers/customshiping/allowedmethods', $config_methods);
+				  }
 				}
 			  }
-		  }	  
+		  }	 
+		  
+		 
 		  
 		  }
  
-		  
+		
 		  }
 		  catch(Exception $e)
 		  {
 		  echo $e->getMessage();
 		  exit;
 		  }
-	
+	  
 	   
-	    // skip if not enabled
-     //   if (!Mage::getStoreConfig('carriers/'.$this->_code.'/active'))
-       //     return false;
+	   
  
      
  

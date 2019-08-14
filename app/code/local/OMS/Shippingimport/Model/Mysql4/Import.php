@@ -1,7 +1,7 @@
 <?php 
 
 
-class Discretelogix_Shippingimport_Model_Mysql4_Import extends Mage_Core_Model_Mysql4_Abstract
+class OMS_Shippingimport_Model_Mysql4_Import extends Mage_Core_Model_Mysql4_Abstract
 {
     public function _construct()
 	{

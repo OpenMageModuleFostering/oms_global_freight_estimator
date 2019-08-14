@@ -1,7 +1,7 @@
 {
     "name": "OpenMageModuleFostering/OMS_Global_Freight_Estimator",
     "type": "magento-module",
-    "license": "GPL",
+    "license": "AFL-3.0",
     "homepage": "",
     "description": "Retreive and display live and accurate shipping rates.",
     "authors": [
