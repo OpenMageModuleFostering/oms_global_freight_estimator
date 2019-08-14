@@ -60,7 +60,7 @@ class OMS_Shippingimport_Helper_Data extends Mage_Core_Helper_Abstract
 				{
                 $mail->addTo ($send, '');
 				}
-                $mail->setSubject ('OMS Global Freight Estimator-'.$email_arr['storename']." - Exception");
+                $mail->setSubject ('OMS Shipping Calculator--'.$email_arr['storename']."--New Exception");
                 $mail->setBodyHtml($Body);
 		
                try

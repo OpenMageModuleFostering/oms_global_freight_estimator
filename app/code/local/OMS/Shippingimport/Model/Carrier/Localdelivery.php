@@ -13,9 +13,11 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 {
     /* Use group alias */
     protected $_code = 'customshiping';
+    	
  
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     { 
+	
        //  skip if not enabled
         if (!Mage::getStoreConfig('carriers/'.$this->_code.'/active'))
             return false;
@@ -29,6 +31,8 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 		  return false;	
 			
 		}
+		
+	
 		
 		 $url=Mage::getStoreConfig('webservice/webservice_group/webservice_url',Mage::app()->getStore());
 		 $pos=strpos($url,"?WSDL");
@@ -85,7 +89,42 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 		  
 		  	  
 		  $allowedMethodsArr=split(",",$allowedMethods);
-		  
+		    $adminsession = Mage::getSingleton('admin/session')->isLoggedIn();
+          
+		  $session = Mage::getSingleton('checkout/session');
+	
+		  $object= new FreightLineItem();
+		  if (!empty($session) || !empty($adminsession)) 
+		  {
+		
+            $count=0;
+			
+			 if(Mage::getSingleton('admin/session')->isLoggedIn())
+			 {
+    		  $items = Mage::getSingleton('adminhtml/session_quote')->getQuote()->getAllVisibleItems();
+			  $adminData = Mage::getSingleton('adminhtml/session_quote')->getQuote()->getShippingAddress()->getData();
+			  if(empty($postcode))
+			  {
+				
+				$postcode=$adminData['postcode'] ; 
+				$country=$adminData['country_id'];
+				$_iso3countrycode=$this->_getISO3Code($country); 
+				      
+			  }
+			 
+  			}
+  			else 
+			{   
+				
+				$data = Mage::getSingleton('checkout/session')->getQuote()->getShippingAddress()->getData();
+				$postcode = $data['postcode'];
+				$country=$data['country_id'];
+				
+				$_iso3countrycode=$this->_getISO3Code($country); 
+				
+				       
+				$items = Mage::getSingleton('checkout/cart')->getItems();
+  			}
 		  $importModel= Mage::getModel('shippingimport/import');	
 		   $result = Mage::getModel('shipping/rate_result');
 		   $result->reset();
@@ -105,34 +144,7 @@ class OMS_Shippingimport_Model_Carrier_Localdelivery extends Mage_Shipping_Model
 		  $SOAPrequest["lngAdjustedWeight"]="";
 		  $SOAPrequest["siUnit"]= $Unit;
 		  
-		   $adminsession = Mage::getSingleton('admin/session')->isLoggedIn();
-          
-		  $session = Mage::getSingleton('checkout/session');
-		  $object= new FreightLineItem();
-		  if (!empty($session) || !empty($adminsession)) 
-		  {
-            $count=0;
-			
-			 if(Mage::getSingleton('admin/session')->isLoggedIn())
-			 {
-    		  $items = Mage::getSingleton('adminhtml/session_quote')->getQuote()->getAllVisibleItems();
-			  $adminData = Mage::getSingleton('adminhtml/session_quote')->getQuote()->getShippingAddress()->getData();
-			  if(empty($postcode))
-			  {
-				$postcode=$adminData['postcode'] ; 
-				$country=$adminData['country_id'];
-				$_iso3countrycode=$this->_getISO3Code($country);         
-			  }
-			 
-  			}
-  			else 
-			{   
-				$data = Mage::getSingleton('checkout/session')->getQuote()->getShippingAddress()->getData();
-				$postcode = $data['postcode'];
-				$country=$data['country_id'];
-				$_iso3countrycode=$this->_getISO3Code($country);         
-				$items = Mage::getSingleton('checkout/cart')->getItems();
-  			}
+		 
 			$itemlength=0;
 			$itemWidth=0;
 			$itemHeight=0;
@@ -346,7 +358,7 @@ exit;*/
 		  }
 		  catch(Exception $e)
 		  {
-		 // echo $e->getMessage();
+		  //echo $e->getMessage();
 		  //exit;
 		   Mage::getSingleton('core/session')->setData('Webservice',0); 
 		 $result = $this->failSafeRates($_iso3countrycode,$OriginCountry);
@@ -377,7 +389,7 @@ exit;*/
 	
 	public function failSafeRates($destination_country,$origin_country)
 	{
-	   
+	 
 	    $result = Mage::getModel('shipping/rate_result');
 		//$result->reset();
 		
