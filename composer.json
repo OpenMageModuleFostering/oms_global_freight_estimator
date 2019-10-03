@@ -1,5 +1,5 @@
 {
-    "name": "OpenMageModuleFostering\/OMS_Global_Freight_Estimator",
+    "name": "openmage-module-fostering\/oms_global_freight_estimator",
     "type": "magento-module",
     "license": "AFL-3.0",
     "homepage": "",
